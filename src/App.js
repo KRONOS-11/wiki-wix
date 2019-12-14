@@ -1,11 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Classes, Card, Icon, Button } from "@blueprintjs/core";
+import {
+  Card,
+  Button,
+  InputGroup,
+  Classes,
+  NonIdealState,
+  Spinner
+} from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
   const debounce = (func, delay) => {
     let debounceTimer;
     return function() {
@@ -15,55 +23,83 @@ function App() {
       debounceTimer = setTimeout(() => func.apply(context, args), delay);
     };
   };
-  const fetchRandomResult = useCallback(
-    callback =>
-      fetch(
-        `https://en.wikipedia.org/w/api.php?action=query&format=json&list=random&rnnamespace=0`
-      )
-        .then(e => e.json())
-        .then(e => callback(e.query.random[0])),
-    []
-  );
   const fetchSearchResults = useCallback(
     debounce((searchT, callback) => {
       fetch(
         `https://en.wikipedia.org/w/api.php?action=opensearch&origin=*&search=${searchT}`
       )
         .then(e => e.json())
-        .then(callback);
-    }, 500),
+        .then(res => {
+          callback(res);
+          setLoading(false);
+        });
+    }, 1000),
     []
   );
   useEffect(() => {
+    setLoading(true);
     searchTerm !== "" && fetchSearchResults(searchTerm, setSearchResults);
   }, [fetchSearchResults, searchTerm]);
   return (
-    <div className="bp3-dark">
-      <div style={{ width: 400, padding: 20, textAlign: "center" }}>
-        <input
-          class={Classes.INPUT}
+    <div
+      className="bp3-dark"
+      style={{
+        background: "#394b59",
+        minHeight: "100vh",
+        paddingBottom: "2em"
+      }}
+    >
+      <div style={{ width: "30%", margin: "0 auto", padding: "2em" }}>
+        <InputGroup
+          large="true"
+          leftIcon="search"
           onChange={e => setSearchTerm(e.target.value)}
-          type="text"
+          placeholder="Search here...."
           value={searchTerm}
-          placeholder="search"
+          rightElement={
+            <a
+              href="https://en.wikipedia.org/wiki/Special:Random"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {" "}
+              <Button icon="random" text="Random" />
+            </a>
+          }
         />
-        <Button icon="random" text="Random Article" />
       </div>
-      <div>
-        {searchResults[1] &&
+      <div style={{ width: "50%", margin: "0 auto" }}>
+        {searchResults[1] && searchResults[1].length > 0 ? (
           searchResults[1].map((e, i) => {
             return (
               <div style={{ transition: "3s" }}>
                 <Card style={{ margin: "10px" }} interactive="true">
                   <a target="blank" href={searchResults[3][i]}>
                     {" "}
-                    <h2>{e}</h2>{" "}
+                    <h2 className={loading && Classes.SKELETON}>{e}</h2>{" "}
                   </a>
-                  <p>{searchResults[2][i] || "No description...!"}</p>
+                  <p className={loading && Classes.SKELETON}>
+                    {searchResults[2][i] || "No description...!"}
+                  </p>
                 </Card>
               </div>
             );
-          })}
+          })
+        ) : searchTerm !== "" ? (
+          !loading ? (
+            <NonIdealState
+              icon="search"
+              title="No search results.."
+              description="Your search didn't match anything. Try searching for other related keywords"
+            />
+          ) : (
+            <Spinner size="100" />
+          )
+        ) : (
+          <h1 class="bp3-heading" style={{ textAlign: "center" }}>
+            Go Ahead and search for something!..
+          </h1>
+        )}
       </div>
     </div>
   );
