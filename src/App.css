@@ -1,0 +1,16 @@
+.searchbar {
+  width: 30%;
+  padding: 2em;
+  margin: 0 auto;
+}
+.results {
+  width: 50%;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 500px) {
+  .searchbar,
+  .results {
+    width: 95%;
+  }
+}

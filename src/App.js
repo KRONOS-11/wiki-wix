@@ -9,7 +9,7 @@ import {
 } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
-
+import "./App.css";
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -49,7 +49,7 @@ function App() {
         paddingBottom: "2em"
       }}
     >
-      <div style={{ width: "30%", margin: "0 auto", padding: "2em" }}>
+      <div className="searchbar">
         <InputGroup
           large="true"
           leftIcon="search"
@@ -68,7 +68,7 @@ function App() {
           }
         />
       </div>
-      <div style={{ width: "50%", margin: "0 auto" }}>
+      <div className="results">
         {searchResults[1] && searchResults[1].length > 0 ? (
           searchResults[1].map((e, i) => {
             return (
