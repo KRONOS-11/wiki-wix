@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
-  Button,
+  AnchorButton,
   InputGroup,
   Classes,
   NonIdealState,
@@ -57,14 +57,13 @@ function App() {
           placeholder="Search here...."
           value={searchTerm}
           rightElement={
-            <a
+            <AnchorButton
+              icon="random"
               href="https://en.wikipedia.org/wiki/Special:Random"
+              text="Random"
               target="_blank"
               rel="noopener noreferrer"
-            >
-              {" "}
-              <Button icon="random" text="Random" />
-            </a>
+            />
           }
         />
       </div>
